@@ -88,3 +88,4 @@ Telegram ichida test qilganda `ngrok -> webapp (Vite)` ishlating. `webapp/.env` 
 Status update bo‘lganda userga Telegram notification yuboriladi.
 
 # Turon
+# turon
