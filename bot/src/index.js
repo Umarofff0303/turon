@@ -25,6 +25,14 @@ const isAdmin = (ctx) => env.adminIds.includes(String(ctx.from?.id || ""));
 const webAppKeyboard = () =>
   Markup.inlineKeyboard([Markup.button.webApp("\u{1F37D} Menuni ochish", env.webappUrl)]);
 
+const webAppMenuButton = {
+  type: "web_app",
+  text: "Open App",
+  web_app: {
+    url: env.webappUrl,
+  },
+};
+
 const adminKeyboard = () =>
   Markup.inlineKeyboard([
     [Markup.button.callback("\u2795 Taom qo'shish", "admin:add_product")],
@@ -64,7 +72,7 @@ bot.start(async (ctx) => {
     [
       "<b>Turon Oshxonasiga xush kelibsiz!</b>",
       "Mazali taomlar va tez yetkazib berish.",
-      "Buyurtmani boshlash uchun tugmani bosing.",
+      "Ilovani ochish uchun pastdagi menu tugmasini bosing.",
     ].join("\n"),
     {
       parse_mode: "HTML",
@@ -393,20 +401,12 @@ bot.catch((err) => {
 });
 
 const start = async () => {
-  const defaultCommands = [
-    { command: "start", description: "Boshlash" },
-    { command: "menu", description: "Mini App ni ochish" },
-    { command: "myorders", description: "Buyurtmalarim" },
-    { command: "contact", description: "Aloqa" },
-  ];
-
-  const adminCommands = [
-    ...defaultCommands,
-    { command: "admin", description: "Admin panel" },
-  ];
-
-  await bot.telegram.setMyCommands(defaultCommands, {
+  await bot.telegram.deleteMyCommands({
     scope: { type: "default" },
+  });
+
+  await bot.telegram.setChatMenuButton({
+    menuButton: webAppMenuButton,
   });
 
   for (const adminId of env.adminIds) {
@@ -417,8 +417,13 @@ const start = async () => {
       continue;
     }
 
-    await bot.telegram.setMyCommands(adminCommands, {
+    await bot.telegram.deleteMyCommands({
       scope: { type: "chat", chat_id: chatId },
+    });
+
+    await bot.telegram.setChatMenuButton({
+      chatId,
+      menuButton: webAppMenuButton,
     });
   }
 
