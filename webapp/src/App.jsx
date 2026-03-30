@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import AppLayout from "./components/layout/AppLayout";
 import AdminGuard from "./components/admin/AdminGuard";
@@ -12,10 +12,10 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
-import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminProductsPage from "./pages/AdminProductsPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminBannersPage from "./pages/AdminBannersPage";
 import { useBootstrap } from "./hooks/useBootstrap";
 
 const App = () => {
@@ -31,7 +31,7 @@ const App = () => {
 
   return (
     <>
-      <HashRouter>
+      <BrowserRouter>
         {error ? (
           <div className="mx-auto mt-4 w-full max-w-xl px-4">
             <ErrorState message={error} />
@@ -48,19 +48,19 @@ const App = () => {
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 
-          <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminGuard />}>
             <Route element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="products" element={<AdminProductsPage />} />
               <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="banners" element={<AdminBannersPage />} />
             </Route>
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
 
       <Toaster
         position="top-center"

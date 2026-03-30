@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useCartStore } from "../../store/cart.store";
+import { useAppStore } from "../../store/app.store";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -11,11 +12,16 @@ const navItems = [
 
 const BottomNav = () => {
   const totalCount = useCartStore((state) => state.totalCount());
+  const isAdmin = useAppStore((state) => state.isAdmin);
+
+  const displayedItems = isAdmin 
+    ? [...navItems, { to: "/admin", label: "Admin" }] 
+    : navItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/80 bg-white/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">
-      <ul className="mx-auto grid max-w-xl grid-cols-5 gap-1">
-        {navItems.map((item) => (
+      <ul className={`mx-auto grid max-w-xl ${isAdmin ? "grid-cols-6" : "grid-cols-5"} gap-1`}>
+        {displayedItems.map((item) => (
           <li key={item.to}>
             <NavLink
               to={item.to}

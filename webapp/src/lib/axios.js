@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAppStore } from "../store/app.store";
 
 const localhostHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 
@@ -43,11 +44,20 @@ const configurationError = getConfigurationError();
 export const api = axios.create({
   baseURL: resolveBaseURL(),
   timeout: 15000,
+  headers: {
+    "Bypass-Tunnel-Reminder": "true",
+    "ngrok-skip-browser-warning": "69420",
+  },
 });
 
 api.interceptors.request.use((config) => {
   if (configurationError) {
     return Promise.reject(new Error(configurationError));
+  }
+
+  const telegramUser = useAppStore.getState().telegramUser;
+  if (telegramUser?.telegramId) {
+    config.headers["x-telegram-id"] = telegramUser.telegramId;
   }
 
   return config;

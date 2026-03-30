@@ -25,8 +25,10 @@ const ProfilePage = () => {
       </section>
 
       <section className="rounded-3xl bg-emerald-900 p-4 text-emerald-50 shadow-card">
-        <h3 className="font-display text-lg font-semibold">Bot komandalar</h3>
-        <p className="mt-2 text-sm text-emerald-100">/menu, /myorders, /contact, /admin</p>
+        <h3 className="font-display text-lg font-semibold">Telegram Ilova</h3>
+        <p className="mt-2 text-sm text-emerald-100">
+          Mini App Telegram ichida menu button orqali ochiladi.
+        </p>
       </section>
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getCategories } from "../api/categories.api";
 import { getProducts } from "../api/products.api";
+import { getActiveBanners } from "../api/banners.api";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import ErrorState from "../components/common/ErrorState";
 import EmptyState from "../components/common/EmptyState";
@@ -16,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -33,9 +35,14 @@ const HomePage = () => {
     setError("");
 
     try {
-      const [categoriesData, productsData] = await Promise.all([getCategories(), getProducts()]);
+      const [categoriesData, productsData, bannersData] = await Promise.all([
+        getCategories(),
+        getProducts(),
+        getActiveBanners(),
+      ]);
       setCategories(categoriesData);
       setProducts(productsData.filter((item) => item.isAvailable));
+      setBanners(bannersData);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -86,6 +93,32 @@ const HomePage = () => {
           />
         </div>
       </header>
+
+      {banners && banners.length > 0 && (
+        <section className="mb-4">
+          <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
+            {banners.map((banner) => (
+              <div 
+                key={banner._id} 
+                className="shrink-0 w-[280px] sm:w-[320px] snap-center rounded-2xl overflow-hidden shadow-sm relative group bg-white border border-slate-100"
+              >
+                <img 
+                  src={banner.imageUrl} 
+                  alt={banner.title} 
+                  className="w-full h-36 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 pointer-events-none">
+                  <h3 className="text-white font-bold text-sm line-clamp-1">{banner.title}</h3>
+                  {banner.description && (
+                    <p className="text-emerald-50 text-xs mt-0.5 line-clamp-2">{banner.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <CategoryChips
         categories={categories}

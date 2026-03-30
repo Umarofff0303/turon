@@ -11,6 +11,7 @@ import { useAppStore } from "../store/app.store";
 export const useBootstrap = () => {
   const setTelegramUser = useAppStore((state) => state.setTelegramUser);
   const setConfig = useAppStore((state) => state.setConfig);
+  const setIsAdmin = useAppStore((state) => state.setIsAdmin);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,13 +25,20 @@ export const useBootstrap = () => {
         applyTelegramTheme();
 
         const telegramUser = getTelegramUser();
+
         setTelegramUser(telegramUser);
 
-        await registerOrLogin({
+        const user = await registerOrLogin({
           telegramId: telegramUser.telegramId,
           fullName: telegramUser.fullName,
           phone: "",
         });
+        
+        if (user && user.role === "admin") {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
 
         const config = await getPublicConfig();
         setConfig(config);

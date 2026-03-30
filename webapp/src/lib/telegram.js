@@ -29,12 +29,17 @@ export const getTelegramUser = () => {
     };
   }
 
-  const localId = localStorage.getItem("turon_local_telegram_id") || "local-dev-1001";
-  localStorage.setItem("turon_local_telegram_id", localId);
+  if (typeof window === "undefined") return null;
+
+  let guestId = localStorage.getItem("turon_guest_id");
+  if (!guestId) {
+    guestId = "guest_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("turon_guest_id", guestId);
+  }
 
   return {
-    telegramId: localId,
-    fullName: "Local User",
+    telegramId: guestId,
+    fullName: "Mehmon",
     username: "",
   };
 };

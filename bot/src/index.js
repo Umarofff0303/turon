@@ -1,7 +1,6 @@
 import { Markup, Telegraf } from "telegraf";
 import { env } from "./config/env.js";
 import {
-  createCategory,
   createProduct,
   deleteProduct,
   getCategories,
@@ -22,8 +21,13 @@ const bot = new Telegraf(env.botToken);
 
 const isAdmin = (ctx) => env.adminIds.includes(String(ctx.from?.id || ""));
 
-const webAppKeyboard = () =>
-  Markup.inlineKeyboard([Markup.button.webApp("\u{1F37D} Menuni ochish", env.webappUrl)]);
+const mainKeyboard = (ctx) => {
+  const buttons = [[Markup.button.webApp("\u{1F37D} Menuni ochish", env.webappUrl)]];
+  if (isAdmin(ctx)) {
+    buttons.push([Markup.button.callback("\u{1F6E0} Admin Panel", "admin:menu")]);
+  }
+  return Markup.inlineKeyboard(buttons);
+};
 
 const webAppMenuButton = {
   type: "web_app",
@@ -40,12 +44,6 @@ const adminKeyboard = () =>
     [Markup.button.callback("\u274C Taomni o'chirish", "admin:delete_product")],
     [Markup.button.callback("\u{1F4E6} Buyurtmalar", "admin:orders")],
   ]);
-
-const DEFAULT_CATEGORIES = [
-  { name: "Milliy taomlar", slug: "milliy-taomlar", image: "" },
-  { name: "Fast food", slug: "fast-food", image: "" },
-  { name: "Ichimliklar", slug: "ichimliklar", image: "" },
-];
 
 const statusesKeyboard = (orderId) => {
   const rows = [];
@@ -76,13 +74,13 @@ bot.start(async (ctx) => {
     ].join("\n"),
     {
       parse_mode: "HTML",
-      ...webAppKeyboard(),
+      ...mainKeyboard(ctx),
     }
   );
 });
 
 bot.command("menu", async (ctx) => {
-  await ctx.reply("Mini App ni oching:", webAppKeyboard());
+  await ctx.reply("Mini App ni oching:", mainKeyboard(ctx));
 });
 
 const handleMyOrders = async (ctx) => {
@@ -129,16 +127,10 @@ bot.command("admin", async (ctx) => {
 });
 
 const startAddProduct = async (ctx) => {
-  let categories = await getCategories();
+  const categories = await getCategories();
 
   if (!categories.length) {
-    await ctx.reply("Kategoriya topilmadi. Default kategoriyalar yaratilmoqda...");
-    await Promise.allSettled(DEFAULT_CATEGORIES.map((category) => createCategory(category)));
-    categories = await getCategories();
-  }
-
-  if (!categories.length) {
-    await ctx.reply("Kategoriya yaratilmadi. Backend va ADMIN_API_KEY ni tekshiring.");
+    await ctx.reply("DB da kategoriya yo'q. Avval admin paneldan kategoriya qo'shing.");
     return;
   }
 

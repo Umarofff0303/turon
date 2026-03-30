@@ -6,6 +6,7 @@ const links = [
   { to: "/admin/dashboard", label: "Dashboard" },
   { to: "/admin/products", label: "Products" },
   { to: "/admin/orders", label: "Orders" },
+  { to: "/admin/banners", label: "Reklamalar" },
 ];
 
 const AdminLayout = () => {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { env } from "../config/env.js";
+import { AppConfig } from "../models/AppConfig.js";
 import { Category } from "../models/Category.js";
 import { Product } from "../models/Product.js";
 
@@ -43,8 +44,16 @@ const productsSeed = [
 const seed = async () => {
   await mongoose.connect(env.mongodbUri);
 
+  await AppConfig.deleteMany({});
   await Product.deleteMany({});
   await Category.deleteMany({});
+
+  await AppConfig.create({
+    key: "public",
+    restaurantName: env.restaurantName,
+    contactPhone: env.contactPhone,
+    contactTelegram: env.contactTelegram,
+  });
 
   const categories = await Category.insertMany(categoriesSeed);
   const categoryMap = new Map(categories.map((category) => [category.slug, category]));

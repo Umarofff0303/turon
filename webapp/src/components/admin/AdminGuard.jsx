@@ -2,10 +2,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAppStore } from "../../store/app.store";
 
 const AdminGuard = () => {
+  const isAdmin = useAppStore((state) => state.isAdmin);
   const adminKey = useAppStore((state) => state.adminKey);
 
-  if (!adminKey) {
-    return <Navigate to="/admin/login" replace />;
+  if (!isAdmin && !adminKey) {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

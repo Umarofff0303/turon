@@ -1,0 +1,48 @@
+services:
+  # Backend API Service
+  - type: web
+    name: turon-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        value: mongodb+srv://umarov:GY.WmsXhJTR8.KE@firstcluster.pypqww9.mongodb.net/turon_food?appName=FirstCluster
+      - key: TELEGRAM_BOT_TOKEN
+        value: 7811679466:AAG6pX86TUC2iSyjHb8dD46w6qTYw79ax7g
+      - key: TELEGRAM_ADMIN_CHAT_IDS
+        value: 5755852815
+      - key: ADMIN_API_KEY
+        value: turon_admin_secret_2026
+      - key: CORS_ORIGIN
+        value: https://webapp-468woyi2b-umarofff0303s-projects.vercel.app
+      - key: RESTAURANT_NAME
+        value: Turon Oshxonasi
+      - key: CONTACT_PHONE
+        value: "+998906983533"
+      - key: CONTACT_TELEGRAM
+        value: "@turon_support"
+
+  # Telegram Bot Service (background worker)
+  - type: worker
+    name: turon-bot
+    runtime: node
+    rootDir: bot
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: BOT_TOKEN
+        value: 7811679466:AAG6pX86TUC2iSyjHb8dD46w6qTYw79ax7g
+      - key: BACKEND_URL
+        value: https://turon-backend.onrender.com
+      - key: WEBAPP_URL
+        value: https://webapp-468woyi2b-umarofff0303s-projects.vercel.app
+      - key: ADMIN_API_KEY
+        value: turon_admin_secret_2026
+      - key: ADMIN_TELEGRAM_IDS
+        value: 5755852815

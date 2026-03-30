@@ -42,13 +42,14 @@ const CheckoutPage = () => {
 
   const canSubmit = useMemo(() => {
     return (
+      Boolean(telegramUser?.telegramId) &&
       items.length > 0 &&
       form.customerName.trim().length >= 2 &&
       form.customerPhone.trim().length >= 5 &&
       Number.isFinite(location.lat) &&
       Number.isFinite(location.lng)
     );
-  }, [items.length, form.customerName, form.customerPhone, location.lat, location.lng]);
+  }, [telegramUser?.telegramId, items.length, form.customerName, form.customerPhone, location.lat, location.lng]);
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit || submitting) {
@@ -57,8 +58,12 @@ const CheckoutPage = () => {
 
     setSubmitting(true);
     try {
+      if (!telegramUser?.telegramId) {
+        throw new Error("Telegram user topilmadi. Mini App ni Telegram ichidan oching.");
+      }
+
       const payload = {
-        telegramUserId: telegramUser?.telegramId || "local-dev-1001",
+        telegramUserId: telegramUser.telegramId,
         customerName: form.customerName.trim(),
         customerPhone: form.customerPhone.trim(),
         note: form.note.trim(),

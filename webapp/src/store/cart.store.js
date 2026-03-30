@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 
 const calcTotal = (items) =>
   items.reduce((sum, item) => {
@@ -8,61 +7,53 @@ const calcTotal = (items) =>
     return sum + quantity * price;
   }, 0);
 
-export const useCartStore = create(
-  persist(
-    (set, get) => ({
-      items: [],
-      addItem: (product, quantity = 1) => {
-        const current = get().items;
-        const existing = current.find((item) => item.productId === product._id);
+export const useCartStore = create((set, get) => ({
+  items: [],
+  addItem: (product, quantity = 1) => {
+    const current = get().items;
+    const existing = current.find((item) => item.productId === product._id);
 
-        let next;
-        if (existing) {
-          next = current.map((item) =>
-            item.productId === product._id
-              ? { ...item, quantity: item.quantity + quantity }
-              : item
-          );
-        } else {
-          next = [
-            ...current,
-            {
-              productId: product._id,
-              name: product.name,
-              price: product.price,
-              image: product.image,
-              quantity,
-            },
-          ];
-        }
-
-        set({ items: next });
-      },
-      removeItem: (productId) =>
-        set((state) => ({
-          items: state.items.filter((item) => item.productId !== productId),
-        })),
-      increase: (productId) =>
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
-          ),
-        })),
-      decrease: (productId) =>
-        set((state) => ({
-          items: state.items
-            .map((item) =>
-              item.productId === productId ? { ...item, quantity: item.quantity - 1 } : item
-            )
-            .filter((item) => item.quantity > 0),
-        })),
-      clearCart: () => set({ items: [] }),
-      totalPrice: () => calcTotal(get().items),
-      totalCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
-    }),
-    {
-      name: "turon_cart_v1",
-      storage: createJSONStorage(() => localStorage),
+    let next;
+    if (existing) {
+      next = current.map((item) =>
+        item.productId === product._id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      );
+    } else {
+      next = [
+        ...current,
+        {
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          quantity,
+        },
+      ];
     }
-  )
-);
+
+    set({ items: next });
+  },
+  removeItem: (productId) =>
+    set((state) => ({
+      items: state.items.filter((item) => item.productId !== productId),
+    })),
+  increase: (productId) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
+      ),
+    })),
+  decrease: (productId) =>
+    set((state) => ({
+      items: state.items
+        .map((item) =>
+          item.productId === productId ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0),
+    })),
+  clearCart: () => set({ items: [] }),
+  totalPrice: () => calcTotal(get().items),
+  totalCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
+}));
